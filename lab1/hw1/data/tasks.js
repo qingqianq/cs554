@@ -54,7 +54,7 @@ create = async (title, description, hoursEstimated, completed) =>{
 getById = async(id) =>{
     if(typeof id !== `string`)
         throw `${id} is not string`;
-    tasksColletion = await tasks();
+    const tasksColletion = await tasks();
     let task = await tasksColletion.find({id:id}).limit(1).next();
     if(task == null)
         throw `not found ${id}`;
@@ -69,12 +69,14 @@ updateAll = async (...args) =>{
     return task;
 };
 /*
-  This function have to use ...args, anonymous function can not use arguments[0] directly,
+  This function have to use args a array as arguments, anonymous function can not use arguments[0] directly.
   args: 0 for id, 1 for title, 2 for description, 3 for hoursEstimated, 4 for completed
 */
-updateAtr = async (...args)=> {
+updateAtr = async (args)=> {
+    let task = await getById(args[0]);
     //todo type check
-    for(let i = 0; i < arguments.length; ++i>){
+    for(let i = 1; i < args.length; ++i){
+        console.log(args[i]);
         if(args[i]){
             switch(i){
             case 0,1,2:
@@ -98,32 +100,37 @@ updateAtr = async (...args)=> {
     //todo update
     let keyNames = ["id", "title", "description", "hoursEstimated", "completed"];
     let tasksColletion = await tasks();
-    for(let i = 0;i < arguments.length; ++i){
+    for(let i = 1;i < arguments.length; ++i){
         let key = keyNames[i];
         let newValue = {};
         newValue[key] = args[i];
         if(arguments[i])
-            await tasksColletion.update({id:id},{$set:newValue});
+            await tasksColletion.update({id:args[0]},{$set:newValue});
     }
     return getById(args[0]);
 };
 /*
   $addToSet do not add the item to the given field if it already contains it,
   on the other hand $push will add the given object to field whether it exists or not.
- */
+*/
 addComment = async(id,comment) =>{
+    let newComment = {};
+    for(let key in comment){
+        if(comment.hasOwnProperty(key) && key != "_id")
+            newComment[key] = comment[key];
+    }
+    console.log(newComment);
     if(comment == undefined) throw `comment does not exits`;
-    let task = await getById(id);
-    if(task == null) throw `not ${id} in database`;
     let tasksColletion = await tasks();
-    await tasksColletion.update({id:id},{$addToSet:{comments:comment}});
-    return getById(id);
+    await tasksColletion.updateOne({id:id},{$push:{comments:newComment}});
+    let task = await getById(id);
+    return task;
 };
-module.exports = {
+module.exports ={
     getTasks,
     create,
     getById,
     updateAll,
-    update,
+    updateAtr,
     addComment
 };

@@ -16,3 +16,6 @@ create = async(name, comment) => {
             throw `insert ${commentObj} error`;
         return commentObj;
 };
+module.exports = {
+    create
+};

@@ -4,13 +4,11 @@ const tasksData = data.tasksData;
 const commentsData = data.commentsData;
 const router = express.Router();
 router.get("/tasks", async(req,res)=>{
-    console.log("id");
     try {
         let tasks = await tasksData.getTasks(req.query.skip,req.query.take);
         res.json(tasks);
     } catch (err) {
-        console.log(err);
-        res.status(500).json({error: "server database error"});
+        res.status(500).json({error:err});
     }
 });
 router.get("/tasks/:id", async(req,res) =>{
@@ -25,7 +23,6 @@ router.get("/tasks/:id", async(req,res) =>{
     }
 });
 router.post("/tasks",async(req,res)=>{
-    // console.log(req.body);
     try {
         let task = await tasksData.create(req.body.title,req.body.description,
                                           req.body.hoursEstimated, req.body.completed);
@@ -36,7 +33,7 @@ router.post("/tasks",async(req,res)=>{
 
     }
 });
-router.put("tasks/:id",async(req,res)=>{
+router.put("/tasks/:id",async(req,res)=>{
     try {
         let task = await tasksData.updateAll(req.params.id, req.body.title, req.body.description,
                                              req.body.hoursEstimated,req.body.completed);
@@ -49,8 +46,9 @@ router.put("tasks/:id",async(req,res)=>{
 });
 router.patch("/tasks/:id", async(req,res) =>{
     try {
-        let task = await tasksData.updateAtr(req.params.id,req.body.title, req.body.description,
-                                             req.body.hoursEstimated, req.body.completed);
+        let args = [req.params.id,req.body.title, req.body.description,
+                    req.body.hoursEstimated, req.body.completed];
+        let task = await tasksData.updateAtr(args);
         res.json(task);
     } catch (err) {
         res.status(400).json({err:err});
@@ -60,12 +58,26 @@ router.patch("/tasks/:id", async(req,res) =>{
 });
 router.post("/tasks/:id/comments", async(req,res) =>{
     try {
-        let comment = await commentsData.create(req.body.name,req.body.comment);
-        let task = await tasksData.addComment(comment);
+        let task = await tasksData.getById(req.params.id);
     } catch (err) {
-        
+        res.status(400).json({err:err});
+        return;
+    } finally {
+      
+    }
+    try {
+        let comment = await commentsData.create(req.body.name,req.body.comment);
+        let task = await tasksData.addComment(req.params.id, comment);
+        res.json(task);
+    } catch (err) {
+        res.status(500).json({err:err});
     } finally {
         
     }
+});
+router.use("*",(req,res)=>{
+    let fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
+    let msg = fullUrl.concat(" not found");
+    res.status(400).json({err:msg});
 });
 module.exports = router;
