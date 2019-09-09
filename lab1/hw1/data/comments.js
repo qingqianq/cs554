@@ -16,6 +16,24 @@ create = async(name, comment) => {
             throw `insert ${commentObj} error`;
         return commentObj;
 };
+deleteComment = async(commentId)=>{
+    if(!commentId || typeof commentId != `string`)
+        throw `need correct comment id`;
+    let commentsCollection = await comments();
+    let {deletedCount} = await commentsCollection.deleteOne({id:commentId});
+    if(!deletedCount)
+        throw `not found ${commentId} in commennt`;
+};
+// getCommentById = async(commentId)=>{
+//     if(!commentId || typeof commentId != `string`)
+//         throw `need correct comment id`;
+//     let commentsCollection = await comments();
+//     let comment = await commentsCollection.find({id:id}).limit(1).next();
+//     if(comment == null)
+//         throw `not find ${commentId}`;
+//     return comment;
+// };
 module.exports = {
-    create
+    create,
+    deleteComment
 };

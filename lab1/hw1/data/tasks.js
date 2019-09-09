@@ -22,7 +22,7 @@ getTasks = async (skip,take)=>{
     } finally {
 
     }
-}
+};
 create = async (title, description, hoursEstimated, completed) =>{
     //todo type check
     if(typeof title !== 'string') throw 'title type error';
@@ -76,7 +76,6 @@ updateAtr = async (args)=> {
     let task = await getById(args[0]);
     //todo type check
     for(let i = 1; i < args.length; ++i){
-        console.log(args[i]);
         if(args[i]){
             switch(i){
             case 0,1,2:
@@ -119,12 +118,26 @@ addComment = async(id,comment) =>{
         if(comment.hasOwnProperty(key) && key != "_id")
             newComment[key] = comment[key];
     }
-    console.log(newComment);
     if(comment == undefined) throw `comment does not exits`;
     let tasksColletion = await tasks();
-    await tasksColletion.updateOne({id:id},{$push:{comments:newComment}});
+    await tasksColletion.updateOne({id:id},{$addToSet:{comments:newComment}});
     let task = await getById(id);
     return task;
+};
+deleteComment = async(taskId, commentId) =>{
+    if(!taskId || typeof taskId != `string`)
+        throw `need a correct tasksId`;
+    if(!commentId || typeof commentId != `string`)
+        throw `need a correct commentId`;
+    let tasksColletion = await tasks();
+    // await getById(taskId);
+    let {result} = await tasksColletion.updateOne({id:taskId},{$pull:{"comments":{"id":commentId}}});
+    console.log(result);
+    if(!result.n)
+        throw `not found task ${taskId}`;
+    if(!result.nModified)
+        throw `not found comment ${commentId}`;
+    return getById(taskId);
 };
 module.exports ={
     getTasks,
@@ -132,5 +145,6 @@ module.exports ={
     getById,
     updateAll,
     updateAtr,
-    addComment
+    addComment,
+    deleteComment
 };

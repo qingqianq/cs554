@@ -13,7 +13,6 @@ router.get("/tasks", async(req,res)=>{
 });
 router.get("/tasks/:id", async(req,res) =>{
     try {
-
         let task = await tasksData.getById(req.params.id);
         res.json(task);
     } catch (err) {
@@ -75,9 +74,22 @@ router.post("/tasks/:id/comments", async(req,res) =>{
         
     }
 });
+router.delete("/tasks/:taskId/:commentId", async(req,res) =>{
+    try {
+        let task = await tasksData.deleteComment(req.params.taskId,req.params.commentId);
+        await commentsData.deleteComment(req.params.commentId);
+        res.json(task);
+    } catch (err) {
+        res.status(404).json({err:err});
+        return;
+    } finally {
+        
+    }
+ 
+});
+
 router.use("*",(req,res)=>{
-    let fullUrl = req.protocol + '://' + req.get('host') + req.originalUrl;
-    let msg = fullUrl.concat(" not found");
+    let msg = "Not found ".concat(req.originalUrl);
     res.status(400).json({err:msg});
 });
 module.exports = router;
