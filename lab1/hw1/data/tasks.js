@@ -103,7 +103,7 @@ updateAtr = async (args)=> {
         let key = keyNames[i];
         let newValue = {};
         newValue[key] = args[i];
-        if(arguments[i])
+        if(arguments[i] != undefined)
             await tasksColletion.update({id:args[0]},{$set:newValue});
     }
     return getById(args[0]);
