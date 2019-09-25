@@ -15,7 +15,7 @@ getTasks = async (skip,take)=>{
     if(take > 100) take = 100;
     try {
         const tasksCollection = await tasks();
-        let allTasks = await tasksCollection.find({}).skip(skip).limit(take).toArray();
+        let allTasks = await tasksCollection.find({},{projection:{_id:0}}).skip(skip).limit(take).toArray();
         return allTasks;
     } catch (err) {
         throw `get tasks error`;
@@ -55,14 +55,14 @@ getById = async(id) =>{
     if(typeof id !== `string`)
         throw `${id} is not string`;
     const tasksColletion = await tasks();
-    let task = await tasksColletion.find({id:id}).limit(1).next();
+    let task = await tasksColletion.find({id:id},{projection:{_id:0}}).limit(1).next();
     if(task == null)
         throw `not found ${id}`;
     return task;
 };
 updateAll = async (...args) =>{
     for(let arg of args){
-        if(!arg)
+        if(arg == undefined)
             throw `need all details of task`;
     }
     let task = await updateAtr(args);
