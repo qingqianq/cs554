@@ -17,7 +17,6 @@ const vendorJsFiles = [
     "./node_modules/jquery/dist/jquery.js",
     "./node_modules/popper.js/dist/umd/popper.min.js",
     "./node_modules/bootstrap/dist/js/bootstrap.js",
-
 ];
 
 gulp.task('sass', function(done) {
