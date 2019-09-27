@@ -23,7 +23,6 @@ $(document).ready(function(){
             "text":productName,
             "href":"#",
             "data-target":"#exampleModalLong",
-            "productName":productName
         });
         $html.click(modal);
         $nav.append(grid);
@@ -46,7 +45,7 @@ $(document).ready(function(){
             $navDiv.css("display","none");
     }
     function modal(){
-        let productName = $(this).attr("productName");
+        let productName = $(this).text();
         $(".modal-title","#exampleModalLong").text(productName);
         $(".modal-body","#exampleModalLong").text(productName.toUpperCase()+
                                                         "'s fake description with more detail.\n\n" +
