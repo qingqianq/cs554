@@ -43,7 +43,7 @@ class PokemonList extends React.Component{
       <Redirect/> redirect the page but the life circle is not done.
       there may be other setState call in other life circle function,that may be memory leak.
       handle it with setState = (state,callback)=>{return};
-      zero width assertion in Id part 零宽断言 .
+      zero width assertion in Id part 零宽断言 this may be very slow if nothing matches because of the backtracking.
       https://stackoverflow.com/questions/2973436/regex-lookahead-lookbehind-and-atomic-groups
     */
     render(){
