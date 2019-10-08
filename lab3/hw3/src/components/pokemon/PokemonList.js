@@ -75,7 +75,7 @@ class PokemonList extends React.Component{
                 let id = pokemons.url.match(/(?<=https:\/\/pokeapi\.co\/api\/v2\/pokemon\/)(\d+)(?=\/)/g);
                 id = id ? id[0] : "nowhere";
                 return (
-                    <li key = {pokemons.url}>
+                    <li key = {pokemons.url.toString()}>
                       <Link to={`/pokemon/${id}`}>{name}</Link>
                     </li>
                 );

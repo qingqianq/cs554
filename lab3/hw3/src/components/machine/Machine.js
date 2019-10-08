@@ -1,5 +1,6 @@
 import React from "react";
 import axios from "axios";
+import uuid from 'uuid/v4';
 import { Link, Redirect } from "react-router-dom";
 
 class Machine extends React.Component{
@@ -22,15 +23,23 @@ class Machine extends React.Component{
             let itemUrl = data.item.url;
             let moveUrl = data.move.url;
             response = await axios.get(itemUrl);
-            machine["cost"] = response.data.cost;
+            machine["Cost"] = response.data.cost;
             for(let effects of response.data.effect_entries){
                 if(effects.language.name === 'en'){
-                    machine["effect"] = effects.effect;
+                    machine["Effect"] = effects.effect;
                     break;
                 }
             }
-            this.setState({machine});
-
+            response = await axios.get(moveUrl);
+            machine.Accuracy = response.data.accuracy;
+            for(let descriptions of response.data.flavor_text_entries){
+                if(descriptions.language.name === 'en'){
+                    machine.Description = descriptions.flavor_text;
+                    break;
+                }
+            }
+            if(Object.keys(machine).length)
+                this.setState({machine:machine});
         }catch(err){
             console.log(err);
             this.setState({redirect:{url:"/nowhere"}});
@@ -44,7 +53,6 @@ class Machine extends React.Component{
             this.getData();
     }
     render(){
-        
         let {redirect} = this.state;
         if(redirect){
             let url = redirect.url;
@@ -61,10 +69,21 @@ class Machine extends React.Component{
             prev = (id !== MACHINE_BEGIN) && <Link to={`${MACHINES}${id - 1}`}> Previos </Link>;
             next = (id !== MACHINE_END) && <Link to={`${MACHINES}${id + 1}`}> Next </Link>;
         }
+        let machine_info;
+        if((machine_info = this.state.machine)){
+            machine = [];
+            for(let keys in machine_info){
+                // some value may be false not use !machine_info[keys] here.
+                if(machine_info[keys] !== undefined && machine_info[keys] !== null)
+                    machine.push(<li key={uuid()}>{keys}: {machine_info[keys]}</li>);
+            }
+        }
         return(
             <div>
               {prev} &nbsp;&nbsp;
               {next}
+              <li>Machine {this.props.match.params.id}</li>
+              {machine}
             </div>
         );
     }

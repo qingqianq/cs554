@@ -12,7 +12,7 @@ class MachineList extends React.Component{
     getData = async () => {
         try{
             const MACHINE_LINK = "https://pokeapi.co/api/v2/machine/";
-            const ONE_PAGE = 25;
+            const ONE_PAGE = 100;
             let page = this.props.match.params.page;
             let urlParams = `?offset=${ONE_PAGE * page}&&limit=${ONE_PAGE}`;
             const response = await axios.get(MACHINE_LINK + urlParams);
