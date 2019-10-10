@@ -9,6 +9,9 @@ html {
     font-size: $primary-font-size;
     background-clip: border-box;
 }
+.nav{
+  position: static
+}
 /* make the card img same width and height*/
 .card-img-top {
     width: 100%;
