@@ -18,7 +18,7 @@ const mySleep = async (ms) =>{
 /*
   Data:
   1. use hashSet $id key to check whether the people is in cache.
-  2. use List "HISTORY"  to store the histroy people visit
+  2. use List "HISTROY"  to store the histroy people visit
 
   Because the type of id is String, and the hmget will auto change data type to string, use set and get with string.
 */
@@ -34,7 +34,8 @@ const getById = async (id) => {
     if(strFlatPeople){
         // console.log("exits");
         let people = unflatten(JSON.parse(strFlatPeople));
-        await client.lpushAsync("HISTORY", id);
+        await client.lpushAsync("HISTORY", strFlatPeople);
+        
         return people;
     }else{
         // console.log("no cache");
@@ -47,17 +48,15 @@ const getById = async (id) => {
         let flatPeople = flatten(people);
         let strFlatPeople = JSON.stringify(flatPeople);
         await client.setAsync(id,strFlatPeople);
-        await client.lpushAsync("HISTORY", id);
+        await client.lpushAsync("HISTORY", strFlatPeople);
         return people;
     }
 };
 const getHistroy = async() =>{
     const BEGIN = 0, END = 19;
-    let history = await client.lrangeAsync("HISTORY", BEGIN, END);
-    let list = [];
-    for(let id of history)
-        list.push(unflatten(JSON.parse(await client.getAsync(id))));
-    return list;
+    let stringHistory = await client.lrangeAsync("HISTORY", BEGIN, END);
+    let history = stringHistory.map(elment => unflatten(JSON.parse(elment)));
+    return history;
 };
 /*
   Router
@@ -66,7 +65,7 @@ app.get("/api/people/history",async(req,res) => {
     try {
         let history = await getHistroy();
         if(history.length === 0)
-            res.send("no history");
+            res.send("histroy empty");
         else
             res.json(history);
     } catch (err) {
@@ -74,18 +73,21 @@ app.get("/api/people/history",async(req,res) => {
     } finally {
 
     }
+
 });
 app.get("/api/people/:id",async(req,res) => {
+    
     try{
         let result = await getById(req.params.id);
         if(result)
             res.json(result);
         else
-            res.status(404).json({err:`not found ${req.params.id}`});
+            res.status(404).json({err:"not found"});
     }catch(err){
         res.status(400).json({err:err});
     }
 });
+
 app.use("*",(req,res) => {
     res.status(404).json({err:"not implement"});
 });
