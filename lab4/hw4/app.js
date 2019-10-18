@@ -32,12 +32,10 @@ const getById = async (id) => {
     // flatPeople = await client.hgetallAsync(id);
     strFlatPeople = await client.getAsync(id);
     if(strFlatPeople){
-        // console.log("exits");
         let people = unflatten(JSON.parse(strFlatPeople));
         await client.lpushAsync("HISTORY", id);
         return people;
     }else{
-        // console.log("no cache");
         let {data} = await axios.get(DATA_URL);
         let people = data.find((people)=>{
             return people.id === parseInt(id);
@@ -70,7 +68,7 @@ app.get("/api/people/history",async(req,res) => {
         else
             res.json(history);
     } catch (err) {
-        res.status(500).json({err:"History err"});
+        res.status(500).json({err:"History server err"});
     } finally {
 
     }
