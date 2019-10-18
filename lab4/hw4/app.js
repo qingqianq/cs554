@@ -18,22 +18,27 @@ const mySleep = async (ms) =>{
 /*
   Data:
   1. use hashSet $id key to check whether the people is in cache.
-  2. use List "HISTROY"  to store the nearest 20 people visit
+  2. use List "HISTROY"  to store the histroy people visit
+
+  Because the type of id is String, and the hmget will auto change data type to string, use set and get with string.
 */
 const getById = async (id) => {
-    if(isNaN(parseInt(id)))
+    if(isNaN(Number(id)))
         throw `Invalid id: ${id}`;
-    id = id.toString();
-    let flatPeople;
+    await mySleep(5000);
+    id = parseInt(id).toString();
+    let strFlatPeople;
     // hmget arg must be an array.
-    flatPeople = await client.hgetallAsync(id);
-    if(flatPeople){
-        console.log("exits");
-        let people = unflatten(flatPeople);
-        await client.lpushAsync("HISTORY", JSON.stringify(flatPeople));
+    // flatPeople = await client.hgetallAsync(id);
+    strFlatPeople = await client.getAsync(id);
+    if(strFlatPeople){
+        // console.log("exits");
+        let people = unflatten(JSON.parse(strFlatPeople));
+        await client.lpushAsync("HISTORY", strFlatPeople);
+        
         return people;
     }else{
-        console.log("no cache");
+        // console.log("no cache");
         let {data} = await axios.get(DATA_URL);
         let people = data.find((people)=>{
             return people.id === parseInt(id);
@@ -41,16 +46,16 @@ const getById = async (id) => {
         if(!people)
             return null;
         let flatPeople = flatten(people);
-        await client.hmsetAsync(id,flatPeople);
-        await client.lpushAsync("HISTORY", JSON.stringify(flatPeople));
+        let strFlatPeople = JSON.stringify(flatPeople);
+        await client.setAsync(id,strFlatPeople);
+        await client.lpushAsync("HISTORY", strFlatPeople);
         return people;
     }
 };
 const getHistroy = async() =>{
     const BEGIN = 0, END = 19;
     let stringHistory = await client.lrangeAsync("HISTORY", BEGIN, END);
-    let history = stringHistory.map(elment => JSON.parse(elment));
-    console.log(history);
+    let history = stringHistory.map(elment => unflatten(JSON.parse(elment)));
     return history;
 };
 /*
@@ -60,7 +65,7 @@ app.get("/api/people/history",async(req,res) => {
     try {
         let history = await getHistroy();
         if(history.length === 0)
-            res.send("no histroy");
+            res.send("histroy empty");
         else
             res.json(history);
     } catch (err) {
@@ -71,7 +76,7 @@ app.get("/api/people/history",async(req,res) => {
 
 });
 app.get("/api/people/:id",async(req,res) => {
-    await mySleep(5000);
+    
     try{
         let result = await getById(req.params.id);
         if(result)
