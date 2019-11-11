@@ -44,53 +44,48 @@ export class apiRouter{
             }
         });
         this.router.put("/tasks/:id",async(req: Request, res: Response)=>{
-            // try {
-            //     let task = await tasksData.updateAll(req.params.id, req.body.title, req.body.description,
-            //                                          req.body.hoursEstimated,req.body.completed);
-            //     res.json(task);
-            // } catch (err) {
-            //     res.status(400).json({err:err});
-            // }
-            res.send("ok");
+            try {
+                let task = await this.collections.updateAll(req.params.id, req.body.title, req.body.description,
+                                                     req.body.hoursEstimated,req.body.completed);
+                res.json(task);
+            } catch (err) {
+                res.status(400).json({err:err});
+            }
         });
         this.router.patch("/tasks/:id", async(req: Request, res: Response) =>{
-            // try {
-            //     let args = [req.params.id,req.body.title, req.body.description,
-            //                 req.body.hoursEstimated, req.body.completed];
-            //     let task = await tasksData.updateAtr(args);
-            //     res.json(task);
-            // } catch (err) {
-            //     res.status(400).json({err:err});
-            // }
-            res.send("ok");
+            try {
+                let args: Array<any> = [req.params.id,req.body.title, req.body.description,
+                            req.body.hoursEstimated, req.body.completed];
+                let task = await this.collections.updateAtr(args);
+                res.json(task);
+            } catch (err) {
+                res.status(400).json({err:err});
+            }
         });
         this.router.post("/tasks/:id/comments", async(req: Request, res: Response) =>{
-            // try {
-            //     let task = await tasksData.getById(req.params.id);
-            // } catch (err) {
-            //     res.status(400).json({err:err});
-            //     return;
-            // }
-            // try {
-            //     let comment = await commentsData.create(req.body.name,req.body.comment);
-            //     let task = await tasksData.addComment(req.params.id, comment);
-            //     res.json(task);
-            // } catch (err) {
-            //     res.status(400).json({err:err});
-            // }
-            res.send("ok");
+            try {
+                await this.collections.getTaskById(req.params.id);
+            } catch (err) {
+                res.status(400).json({err:err});
+                return;
+            }
+            try {
+                let comment = await this.collections.createComment(req.body.name,req.body.comment);
+                let task = await this.collections.addComment(req.params.id, comment);
+                res.json(task);
+            } catch (err) {
+                res.status(400).json({err:err});
+            }
         });
         this.router.delete("/tasks/:taskId/:commentId", async(req: Request, res: Response) =>{
-            // try {
-            //     let task = await tasksData.deleteComment(req.params.taskId,req.params.commentId);
-            //     await commentsData.deleteComment(req.params.commentId);
-            //     res.json(task);
-            // } catch (err) {
-            //     res.status(404).json({err:err});
-            //     return;
-            // }
-            res.send("ok");
-
+            try {
+                let task = await this.collections.deleteCommentInTask(req.params.taskId,req.params.commentId);
+                await this.collections.deleteComment(req.params.commentId);
+                res.json(task);
+            } catch (err) {
+                res.status(404).json({err:err});
+                return;
+            }
         });
     }
 }
