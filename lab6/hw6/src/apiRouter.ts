@@ -30,7 +30,6 @@ export class apiRouter{
                 let task = await this.collections.getTaskById(req.params.id);
                 res.json(task);
             } catch (err) {
-                console.log("get tasks err");
                 res.status(404).json({err:err});
             }
         });
