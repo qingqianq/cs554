@@ -41,7 +41,6 @@ class apiRouter {
                 res.json(task);
             }
             catch (err) {
-                console.log("get tasks err");
                 res.status(404).json({ err: err });
             }
         }));
