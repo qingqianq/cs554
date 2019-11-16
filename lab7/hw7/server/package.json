@@ -1,0 +1,19 @@
+{
+  "name": "server",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "keywords": [],
+  "author": "Guangqi Qing 10430202",
+  "license": "ISC",
+  "dependencies": {
+    "apollo-server": "^2.9.9",
+    "node-fetch": "^2.6.0",
+    "unsplash-js": "^6.0.0",
+    "uuid": "^3.3.3"
+  }
+}
