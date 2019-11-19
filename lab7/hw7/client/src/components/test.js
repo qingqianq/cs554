@@ -10,8 +10,8 @@ let img = {
     "binned": false
 };
 const BASE_URL = "http://localhost:4000";
-    const q =  `mutation SaveImage($id:String!, $url:String!, $poster_name:String!, $description: String, $user_posted:Boolean!, $binned: Boolean!){
-    saveImage(id:$id, url:url, poster_name:$poster_name, description:$description, user_posted:$user_posted,binned:$binned){
+    const q =  `mutation SaveImage($input: ImageInput){
+    saveImage(input: $input){
         id url poster_name description user_posted binned
     }}`;
 let fetch = createApolloFetch({
@@ -20,7 +20,7 @@ let fetch = createApolloFetch({
 const saveToBin = async(image) =>{
     let res = await fetch({
         query: q,
-        variables:image
+        variables:{input:image}
     });
     console.log(res.data);
 };

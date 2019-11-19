@@ -1,5 +1,5 @@
 import React from 'react';
-import logo from './logo.svg';
+// import logo from './logo.svg';
 import './App.css';
 import Container from './components/Container';
 import {BrowserRouter as Router, Link} from "react-router-dom";
@@ -12,9 +12,6 @@ const Nav = () =>{
             </li>
             <li>
               <Link to="/my-bin">my bin</Link>
-            </li>
-            <li>
-              <Link to="/images">images </Link>
             </li>
             <li>
               <Link to="/my-posts">my post</Link>

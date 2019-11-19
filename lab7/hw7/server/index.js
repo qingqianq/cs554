@@ -8,13 +8,11 @@ const typeDefs =
           unsplashImages(pageNum: Int!): [ImagePost]
           likedImages: [ImagePost]
           userPostedImages: [ImagePost]
-          getImages: [ImagePost]
       }
       type Mutation{
           uploadImage(url: String!, description: String, author: String): ImagePost
-          updateImage(id: ID!, url: String, description: String, binned: Boolean): ImagePost
+          updateImage(id:ID!, url: String, author: String, description: String, user_posted: Boolean, binned: Boolean):ImagePost
           deleteImage(id: ID!): ImagePost
-          saveImage(id:String!, url:String!, poster_name:String!, description: String, user_posted:Boolean!, binned: Boolean!): ImagePost
       }
       type ImagePost {
           id: ID!
@@ -29,25 +27,14 @@ const typeDefs =
 const resolvers = {
     Query: {
         unsplashImages: (_,args) => Service.getUnsplashPics(args.pageNum),
-        likedImages:(_,args) => null,
-        userPostedImages: (_,args) => null
+        likedImages:() => Service.likedImages(),
+        userPostedImages: () => Service.userPostedImages(),
     },
     Mutation:{
-        updateImage:(_, args) =>{
-            return null;
-        },
-        uploadImage:(_, args) =>{
-            return null;
-        },
-        deleteImage:(_, args) =>{
-            return null;
-        },
-        // saveImage:(_,args) => Service.saveImage(args),
-        saveImage:(_,args) => {
-            console.log(args);
-            return null;
-        },
-    } 
+        updateImage:(_, args) => Service.updateImage(args.id, args.url, args.author, args.description, args.user_posted, args.binned),
+        uploadImage:(_, args) => Service.uploadImage(args.url, args.description, args.author),
+        deleteImage:(_, args) => Service.deleteImage(args.id),
+    }
 };
 const server = new ApolloServer({ typeDefs, resolvers});
 (async()=>{

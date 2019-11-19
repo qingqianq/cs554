@@ -24,7 +24,7 @@ class Post extends React.Component{
 
         return(
             <div>
-              Post
+              <a href="/new-post">Upload a Post</a>
             </div>
         );
     }
