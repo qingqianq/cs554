@@ -25,24 +25,35 @@ const GET_BIN_PICS = gql`
         }
     }
 `;
-const GET_BIN_PICS_ID = gql`
-    query{
-        likedImages{
-            id
+
+const SAVE_POST = gql`
+    mutation UploadImage($url:String!, $author: String, $description: String){
+        uploadImage(url:$url, author:$author, description:$description){
+            id url poster_name description user_posted binned
         }
     }
 `;
-const SAVE_POST = gql`
-    mutation UploadImage($url:String!, $description:String, $author:String){
-        uploadImage(url:$url, description:$description, author:$author){
+
+const DEL_POST = gql`
+    mutation DeleteImage($id: ID!){
+        deleteImage(id:$id){
+            id url poster_name description user_posted binned
+        }
+    }
+`;
+
+const GET_POST_PICS = gql`
+    query{
+        userPostedImages{
             id url poster_name description user_posted binned
         }
     }
 `;
 export default{
     GET_RAND_PICS,
-    GET_BIN_PICS,
-    GET_BIN_PICS_ID,
     SAVE_PIC_BIN,
     SAVE_POST,
+    GET_BIN_PICS,
+    GET_POST_PICS,
+    DEL_POST,
 };

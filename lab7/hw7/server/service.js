@@ -171,5 +171,6 @@ module.exports = {
     updateImage,
     likedImages,
     userPostedImages,
-    uploadImage
+    uploadImage,
+    deleteImage,
 };
