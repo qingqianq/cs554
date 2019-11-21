@@ -10,7 +10,9 @@ class Image extends React.Component{
     super(props);
     this.state = {addToBin:true};
   }
-
+  removeBin = ()=>{
+    this.setState({addToBin:true});
+  }
   render(){
     let info = this.state.addToBin ? "Add to Bin" : "Remove from Bin";
     let image = this.props.image;
@@ -63,47 +65,45 @@ class Image extends React.Component{
       )}else{
         btn = (
           <Query query={queries.GET_BIN_PICS}>
-            {({data})=>{
-              if(!data) return null;
-              let {likedImages} = data;
-              return (
-                <Mutation
-                  mutation={queries.SAVE_PIC_BIN}
-                  update={
-                  (cache) => {
-                    let res = cache.readQuery({query:queries.GET_BIN_PICS});
-                    let {likedImages} = res;
-                    if(res)
-                      cache.writeQuery({query:queries.GET_BIN_PICS,data:{likedImages:likedImages.concat([this.props.image])}});
-                  }}
-                >
-                  {
-                    (updateImage, {data}) =>(
-                      <form onSubmit={e => {
-                        e.preventDefault();
-                        updateImage({
-                          variables:{
-                            id:image.id,
-                            url:image.url,
-                            author:image.poster_name,
-                            description:image.description,
-                            user_posted:false,
-                            binned:false,
-                          }});
-                        alert("Removed");
-                        this.setState({addToBin:true});
-                      }}>
-                        <button className="btn btn-primary" type="submit">{info}</button>
-                      </form>
-                    )
-                  }
-                </Mutation>
-              )
-            }}
-          </Query>
+          {({data})=>{
+            if(!data) return null;
+            return (
+              <Mutation
+                mutation={queries.SAVE_PIC_BIN}
+                update={
+                (cache) => {
+                  let res = cache.readQuery({query:queries.GET_BIN_PICS});
+                  let {likedImages} = res;
+                  if(res)
+                    cache.writeQuery({query:queries.GET_BIN_PICS,data:{likedImages:likedImages.filter(e=>e.id!==image.id )}});
+                }}
+              >
+                {
+                  (updateImage, {data}) =>(
+                    <form onSubmit={e => {
+                      e.preventDefault();
+                      updateImage({
+                        variables:{
+                          id:image.id,
+                          url:image.url,
+                          author:image.poster_name,
+                          description:image.description,
+                          user_posted:false,
+                          binned:false,
+                        }});
+                      alert("Removed");
+                      info ="Add to Bin";
+                    }}>
+                      <button className="btn btn-primary" type="submit" >{info}</button>
+                    </form>
+                  )
+                }
+              </Mutation>
+            )
+          }}
+        </Query>
         )
       }
-
     return(
       <div>
         <Card style={{ width: '18rem' }}>
