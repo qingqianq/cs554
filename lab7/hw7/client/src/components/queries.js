@@ -32,9 +32,17 @@ const GET_BIN_PICS_ID = gql`
         }
     }
 `;
+const SAVE_POST = gql`
+    mutation UploadImage($url:String!, $description:String, $author:String){
+        uploadImage(url:$url, description:$description, author:$author){
+            id url poster_name description user_posted binned
+        }
+    }
+`;
 export default{
     GET_RAND_PICS,
     GET_BIN_PICS,
     GET_BIN_PICS_ID,
     SAVE_PIC_BIN,
+    SAVE_POST,
 };

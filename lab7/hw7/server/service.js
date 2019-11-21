@@ -82,6 +82,7 @@ async function updateImage(id, url, poster_name, description, user_posted, binne
             throw "Remove from Bin err";
         }
     }
+    // console.log(img);
     return img;
 }
 async function likedImages(){

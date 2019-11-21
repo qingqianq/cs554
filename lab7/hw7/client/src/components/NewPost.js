@@ -1,5 +1,6 @@
 import React from "react";
-
+import {Mutation} from 'react-apollo';
+import queries from './queries.js';
 class NewPost extends React.Component{
     constructor(props){
         super(props);
@@ -21,10 +22,15 @@ class NewPost extends React.Component{
         
     }
     render(){
+        let body = null;
+        body = (
+            <Mutation mutation="queries.ADD_PIC">
 
+            </Mutation>
+        );
         return(
             <div>
-              new post
+              
             </div>
         );
     }
