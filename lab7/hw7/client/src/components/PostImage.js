@@ -4,6 +4,7 @@ import {Query} from 'react-apollo';
 import queries from './queries.js';
 import {Card} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+import ImageButton from './ImageButton.js';
 class PostImage extends React.Component{
   constructor(props){
     super(props);
@@ -13,33 +14,33 @@ class PostImage extends React.Component{
   }
   render(){
     let image = this.props.image;
-    let btn;
+    let addButton;
+    let btn=(
+      <Mutation mutation={queries.DEL_POST}
+        update={
+        (cache)=>{
+          let res = cache.readQuery({query:queries.GET_POST_PICS});
+          let {userPostedImages} = res;
+          if(res)
+            cache.writeQuery({query:queries.GET_POST_PICS,data:{userPostedImages:userPostedImages.filter(e=>e.id!==image.id)}});
+        }}
+      >
+        {
+          (deleteImage,{data})=>(
+            <form onSubmit={e => {
+              e.preventDefault();
+              deleteImage({variables:{id:image.id}});
+              alert("Removed");
+              this.setState({addToBin:false});
+            }}>
+              <button className="btn btn-primary" type="submit" >Remove from Post</button>
+            </form>
+          )
+        }
+      </Mutation>
+    )
     if(this.state.addToBin){
-      btn=(
-        <Mutation mutation={queries.DEL_POST}
-          update={
-          (cache)=>{
-            let res = cache.readQuery({query:queries.GET_POST_PICS});
-            let {userPostedImages} = res;
-            if(res)
-              cache.writeQuery({query:queries.GET_POST_PICS,data:{userPostedImages:userPostedImages.filter(e=>e.id!==image.id)}});
-          }}
-        >
-          {
-            (deleteImage,{data})=>(
-              <form onSubmit={e => {
-                e.preventDefault();
-                deleteImage({variables:{id:image.id}});
-                alert("Removed");
-              }}>
-                <button className="btn btn-primary" type="submit" >Remove from Post</button>
-              </form>
-            )
-          }
-        </Mutation>
-      )
-    }else{
-
+      addButton = <ImageButton image={image} />
     }
     return(
       <div>
@@ -50,6 +51,7 @@ class PostImage extends React.Component{
             <Card.Text>
               {image.description}
             </Card.Text>
+            {addButton}
             {btn}
           </Card.Body>
         </Card>
