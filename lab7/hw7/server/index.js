@@ -8,6 +8,7 @@ const typeDefs =
           unsplashImages(pageNum: Int!): [ImagePost]
           likedImages: [ImagePost]
           userPostedImages: [ImagePost]
+          getTopTenBinnedPosts: [ImageLikes]
       }
       type Mutation{
           uploadImage(url: String!, description: String, author: String): ImagePost
@@ -22,13 +23,23 @@ const typeDefs =
           user_posted: Boolean!
           binned: Boolean!
       }
+      type ImageLikes {
+          id: ID!
+          url: String!
+          poster_name: String!
+          description: String
+          user_posted: Boolean!
+          binned: Boolean!
+          likes: Int!
+      }
 `;
 
 const resolvers = {
     Query: {
         unsplashImages: (_,args) => Service.getUnsplashPics(args.pageNum),
-        likedImages:() => Service.likedImages(),
+        likedImages: () => Service.likedImages(),
         userPostedImages: () => Service.userPostedImages(),
+        getTopTenBinnedPosts: () => Service.getTopTenBinnedPosts(),
     },
     Mutation:{
         updateImage:(_, args) => Service.updateImage(args.id, args.url, args.author, args.description, args.user_posted, args.binned),

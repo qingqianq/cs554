@@ -5,9 +5,6 @@ const unsplash = new Unsplash({accessKey:`${APP_ACCESS_KEY}`});
 const fetch = require('node-fetch');
 const redis = require("redis");
 const bluebird = require("bluebird");
-// Data is flatten this lab.
-// const flatten = require("flat");
-// const unflatten = flatten.unflatten;
 bluebird.promisifyAll(redis.RedisClient.prototype);
 bluebird.promisifyAll(redis.Multi.prototype);
 const client = redis.createClient();
@@ -57,10 +54,12 @@ async function updateImage(id, url, poster_name, description, user_posted, binne
     let exists = await client.existsAsync(id);
     // console.log(exists);
     if(binned){
-        console.log("Binned");
-        if(exists)
-            return img;
+        //even exist should update the binned value because it may be the user add to the binned, once there is a bug here.
         try{
+            if(exists){
+                await client.hsetAsync(img.id,"binned",true);
+                return img;
+            }
             for(let key in img)
                 await client.hsetAsync(img.id,key,img[key]);
             await client.lpushAsync("images",img.id);
@@ -70,7 +69,7 @@ async function updateImage(id, url, poster_name, description, user_posted, binne
         }
     }else{
         try{
-            console.log("Not binned");
+            // console.log("Not binned");
             if(user_posted) // here only handle remove from bin, not the upload
                 await client.hsetAsync(img.id,"binned",false);
             else{
@@ -166,6 +165,30 @@ async function uploadImage(url, description, poster_name){
     }
     return img;
 }
+async function getTopTenBinnedPosts(){
+    let likesList = [];
+    try{
+        let idList = await client.lrangeAsync("images", 0, -1);
+        for (let id of idList){
+            let img = await client.hgetallAsync(id);
+            if(img.binned) img.binned = (img.binned == "true");
+            if(img.user_posted) img.user_posted = (img.user_posted == "true");
+            if(img.description === 'null') img.description = undefined;
+            let res = await unsplash.photos.getPhoto(img.id);
+            let {likes} = await toJson(res);
+            if(likes != undefined)
+                img.likes = likes;
+            else
+                img.likes = (img.binned) ? 1 : 0;
+            likesList.push(img);
+        }
+    }catch(err){
+        console.log(err);
+        throw "Get top10 Bin err";
+    }
+    likesList.sort((a,b)=>{return (b.likes - a.likes);});
+    return likesList.slice(0,10);
+}
 module.exports = {
     getUnsplashPics,
     updateImage,
@@ -173,4 +196,5 @@ module.exports = {
     userPostedImages,
     uploadImage,
     deleteImage,
+    getTopTenBinnedPosts
 };

@@ -1,6 +1,5 @@
 import React from "react";
 import {Mutation} from 'react-apollo';
-import {Query} from 'react-apollo';
 import queries from './queries.js';
 import {Card} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';

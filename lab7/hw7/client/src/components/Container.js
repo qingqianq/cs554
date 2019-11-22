@@ -4,6 +4,7 @@ import ImageList from './ImageList';
 import Bin from './Bin';
 import AddPost from './AddPost.js';
 import Post from './Post';
+import Popularity from './Popularity';
 function routeContainer(){
     let Nowhere = ()=>{
         return(<div>404 Nowhere</div>);
@@ -13,8 +14,9 @@ function routeContainer(){
           <Switch>
             <Route path="/" exact component={ImageList} />
             <Route path="/my-bin" exact component={Bin} />
-            <Route path="/new-post" component={AddPost} />
-            <Route path="/my-posts" component={Post} />
+            <Route path="/new-post" exact component={AddPost} />
+            <Route path="/my-posts" exact component={Post} />
+            <Route path="/popularity" exact component={Popularity} />
             <Route path="*" component={Nowhere} />
           </Switch>
         </div>

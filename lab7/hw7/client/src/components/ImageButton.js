@@ -2,8 +2,11 @@ import React from "react";
 import {Mutation} from 'react-apollo';
 import {Query} from 'react-apollo';
 import queries from './queries.js';
-import {Card} from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
+/*
+  This file is similar like the Image.js, but all the user_post should be true
+  or there may update the cache but not store into the redis.
+ */
 class ImageButton extends React.Component{
   constructor(props){
     super(props);
@@ -45,7 +48,7 @@ class ImageButton extends React.Component{
                                 url:image.url,
                                 author:image.poster_name,
                                 description:image.description,
-                                user_posted:false,
+                                user_posted:true,
                                 binned:false,
                               }});
                             alert("Removed");
@@ -80,7 +83,7 @@ class ImageButton extends React.Component{
                           url:image.url,
                           author:image.poster_name,
                           description:image.description,
-                          user_posted:false,
+                          user_posted:true,
                           binned:true,
                         }});
                       alert("Added");
@@ -121,7 +124,7 @@ class ImageButton extends React.Component{
                               url:image.url,
                               author:image.poster_name,
                               description:image.description,
-                              user_posted:false,
+                              user_posted:true,
                               binned:false,
                             }});
                           alert("Removed");

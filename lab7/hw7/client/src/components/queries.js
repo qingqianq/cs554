@@ -49,6 +49,17 @@ const GET_POST_PICS = gql`
         }
     }
 `;
+const GET_POP_PICS = gql`
+    query{
+        getTopTenBinnedPosts{
+        id
+        url
+        poster_name
+        description
+        likes
+    }
+  }
+`;
 export default{
     GET_RAND_PICS,
     SAVE_PIC_BIN,
@@ -56,4 +67,5 @@ export default{
     GET_BIN_PICS,
     GET_POST_PICS,
     DEL_POST,
+    GET_POP_PICS,
 };
