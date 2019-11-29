@@ -25,7 +25,6 @@ const mySleep = async (ms) =>{
 const getById = async (id) => {
     if(isNaN(Number(id)))
         throw `Invalid id: ${id}`;
-    await mySleep(5000);
     id = parseInt(id).toString();
     let strFlatPeople;
     // hmget arg must be an array.
@@ -36,6 +35,7 @@ const getById = async (id) => {
         await client.lpushAsync("HISTORY", id);
         return people;
     }else{
+        await mySleep(5000);
         let {data} = await axios.get(DATA_URL);
         let people = data.find((people)=>{
             return people.id === parseInt(id);
